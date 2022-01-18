@@ -12,7 +12,7 @@ def send_otp_by_email(otp):
 def send_otp_by_sms(otp, phone_number):
     # twilio code
     account_sid = 'ACf7ea714175f05c105816d939bc81c035'
-    auth_token = 'b21f1eacf4890b8327ebe021ec55ff5b'
+    auth_token = '7873d52d62452f6856c6ba5d9832c116'
     client = Client(account_sid, auth_token)
 
     message = client.messages.create(

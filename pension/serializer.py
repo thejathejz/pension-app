@@ -9,7 +9,7 @@ from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .sms import send_otp_by_email, send_otp_by_sms
-from .models import UserAccountDetails
+from .models import UserAccountDetails,Profile, ServiceStatus, BookAppointment
 
 
 # Registration
@@ -114,5 +114,67 @@ class ChangePasswordSerializer(serializers.Serializer):
     model = User
     old_password = serializers.CharField(required=True)
     new_password = serializers.CharField(required=True)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ('gender', 'address',)
+    
+
+class ServiceStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ServiceStatus
+        fields = ('status',)
+
+
+class BookAppointmentSerializer(serializers.ModelSerializer):
+    date = serializers.DateField(format="%d-%m-%Y")
+    class Meta:
+        model = BookAppointment
+        fields = ('date','time',)
+
+
+class ResendOtpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email',)
+    # def validat(self, attrs):
+    #     email = attrs.get('email', '')
+    #     if not User.objects.get(email = email).exist(): 
+    #         raise serializers.ValidationError({'email' : ('email is not registered')})
+    
+    def create(self, validated_data):
+        # Function to generate OTP
+        def generateOTP():
+            digits = "123456789"
+            OTP = ""
+
+            for i in range(5):
+                OTP += digits[math.floor(random.random() * 9)]
+
+            return OTP
+
+        OTP = generateOTP()
+        try:
+            user = User.objects.get(email = validated_data['email'])
+        except:
+               raise serializers.ValidationError({'email' : ('email is not registered')})
+        userreg = UserAccountDetails.objects.get(user = user)
+        userreg.otp = OTP
+                
+
+        
+
+        # Calling function to send otp using  email
+        send_otp_by_email(OTP)
+
+        # # Calling function to send otp using sms
+        #send_otp_by_sms(OTP ,validated_data['phone_number'])
+
+        user.save()
+        userreg.save()
+
+        return User
 
 

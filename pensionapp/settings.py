@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'notify',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'pension',
     'rest_framework',
     'django_rest_passwordreset',
+    'channels',
     
 ]
 
@@ -142,3 +144,15 @@ EMAIL_HOST_PASSWORD = "theja@login2021"
 TWILIO_ACCOUNT_SID = 'ACf7ea714175f05c105816d939bc81c035'
 TWILIO_AUTH_TOKEN = 'b21f1eacf4890b8327ebe021ec55ff5b'
 TWILIO_PHONE_NUMBER = '+14843098241'
+
+
+ASGI_APPLICATION = 'pensionapp.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
